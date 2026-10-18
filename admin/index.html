@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    body { background: #f6f7fb; }
+    .brand { color: #14284b; font-weight: 700; }
+    .btn-brand { background: #c9a24b; border-color: #c9a24b; color: #0c1a33; font-weight: 600; }
+    .btn-brand:hover { background: #d6b05c; border-color: #d6b05c; color: #0c1a33; }
+    .nav-pills .nav-link { color: #14284b; }
+    .nav-pills .nav-link.active { background: #14284b; color: #fff; }
+    .thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 6px; }
+    #toastBox { position: fixed; top: 16px; right: 16px; z-index: 2000; max-width: 320px; }
+  </style>
+</head>
+<body>
+  <div id="toastBox"></div>
+
+  <!-- ============ LOGIN ============ -->
+  <div id="loginView" class="min-vh-100 d-flex align-items-center justify-content-center p-3">
+    <div class="card border-0 shadow rounded-4 p-4" style="width: 100%; max-width: 400px;">
+      <h1 class="h4 brand mb-1">Admin Login</h1>
+      <p class="text-muted small">Sign in to manage your website.</p>
+      <p id="loginMsg" class="alert alert-warning small d-none"></p>
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input type="email" id="loginEmail" class="form-control" autocomplete="username" required />
+        </div>
+        <div class="mb-3">
+          <label for="loginPass" class="form-label">Password</label>
+          <input type="password" id="loginPass" class="form-control" autocomplete="current-password" required />
+        </div>
+        <p id="loginError" class="text-danger small"></p>
+        <button class="btn btn-brand w-100" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div id="appView" class="d-none">
+    <nav class="navbar bg-white shadow-sm mb-4">
+      <div class="container">
+        <span class="navbar-brand brand"><i class="bi bi-speedometer2 me-2"></i>Admin Panel</span>
+        <div class="d-flex gap-2">
+          <a href="../index.html" target="_blank" class="btn btn-sm btn-outline-secondary">View Website</a>
+          <button id="logoutBtn" class="btn btn-sm btn-outline-danger">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container pb-5">
+      <ul class="nav nav-pills mb-4 flex-wrap gap-2">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-enq"><i class="bi bi-inbox me-1"></i>Enquiries</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-srv"><i class="bi bi-grid me-1"></i>Services</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-tst"><i class="bi bi-chat-quote me-1"></i>Testimonials</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-set"><i class="bi bi-gear me-1"></i>Settings</button></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <!-- ENQUIRIES -->
+        <div class="tab-pane fade show active" id="tab-enq">
+          <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3"><div class="card border-0 shadow-sm p-3"><div class="text-muted small">Total enquiries</div><div class="fs-3 fw-bold" id="statTotal">0</div></div></div>
+            <div class="col-6 col-md-3"><div class="card border-0 shadow-sm p-3"><div class="text-muted small">New</div><div class="fs-3 fw-bold text-success" id="statNew">0</div></div></div>
+          </div>
+          <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+              <table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Date</th><th>Customer</th><th>Phone</th><th>Service</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="enqBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICES -->
+        <div class="tab-pane fade" id="tab-srv">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <form id="srvForm" class="card border-0 shadow-sm p-4">
+                <h2 class="h5 brand" id="srvFormTitle">Add Service</h2>
+                <input type="hidden" id="srvId" />
+                <div class="mb-3"><label class="form-label" for="srvTitle">Title *</label><input id="srvTitle" class="form-control" required maxlength="80" /></div>
+                <div class="mb-3"><label class="form-label" for="srvDesc">Short description</label><textarea id="srvDesc" class="form-control" rows="2" maxlength="250"></textarea></div>
+                <div class="mb-3"><label class="form-label" for="srvFeatures">Features (one per line)</label><textarea id="srvFeatures" class="form-control" rows="3"></textarea></div>
+                <div class="row g-3 mb-3">
+                  <div class="col-6"><label class="form-label" for="srvPrice">Price</label><input id="srvPrice" class="form-control" placeholder="e.g. ₹5,000 / month" /></div>
+                  <div class="col-6"><label class="form-label" for="srvAvail">Availability</label><input id="srvAvail" class="form-control" placeholder="e.g. 2 seats left" /></div>
+                </div>
+                <div class="mb-3"><label class="form-label" for="srvImage">Image URL</label><input id="srvImage" class="form-control" placeholder="images/room1.jpg or https://..." /></div>
+                <div class="row g-3 mb-3 align-items-end">
+                  <div class="col-6"><label class="form-label" for="srvOrder">Order (1 = first)</label><input type="number" id="srvOrder" class="form-control" value="1" /></div>
+                  <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" id="srvVisible" checked /><label class="form-check-label" for="srvVisible">Show on website</label></div></div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-brand flex-grow-1" type="submit">Save</button>
+                  <button class="btn btn-outline-secondary" type="button" id="srvReset">Clear</button>
+                </div>
+              </form>
+            </div>
+            <div class="col-lg-7"><ul class="list-group shadow-sm" id="srvList"></ul></div>
+          </div>
+        </div>
+
+        <!-- TESTIMONIALS -->
+        <div class="tab-pane fade" id="tab-tst">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <form id="tstForm" class="card border-0 shadow-sm p-4">
+                <h2 class="h5 brand" id="tstFormTitle">Add Testimonial</h2>
+                <p class="small text-muted">Only add real reviews, with the customer's permission.</p>
+                <input type="hidden" id="tstId" />
+                <div class="mb-3"><label class="form-label" for="tstName">Customer name *</label><input id="tstName" class="form-control" required maxlength="80" /></div>
+                <div class="mb-3"><label class="form-label" for="tstText">Review *</label><textarea id="tstText" class="form-control" rows="4" required maxlength="500"></textarea></div>
+                <div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="tstVisible" checked /><label class="form-check-label" for="tstVisible">Show on website</label></div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-brand flex-grow-1" type="submit">Save</button>
+                  <button class="btn btn-outline-secondary" type="button" id="tstReset">Clear</button>
+                </div>
+              </form>
+            </div>
+            <div class="col-lg-7"><ul class="list-group shadow-sm" id="tstList"></ul></div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="tab-pane fade" id="tab-set">
+          <form id="setForm" class="card border-0 shadow-sm p-4" style="max-width: 600px;">
+            <h2 class="h5 brand">Business Settings</h2>
+            <div class="mb-3"><label class="form-label" for="setWhatsapp">WhatsApp number (country code + number, no + or spaces)</label><input id="setWhatsapp" class="form-control" placeholder="919876543210" /></div>
+            <div class="mb-3"><label class="form-label" for="setPhone">Phone number shown on the site</label><input id="setPhone" class="form-control" placeholder="+91 98765 43210" /></div>
+            <div class="mb-3"><label class="form-label" for="setAddress">Address</label><textarea id="setAddress" class="form-control" rows="2"></textarea></div>
+            <div class="mb-3"><label class="form-label" for="setMaps">Google Maps link (for Get Directions)</label><input id="setMaps" class="form-control" placeholder="https://maps.google.com/..." /></div>
+            <button class="btn btn-brand" type="submit">Save Settings</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
